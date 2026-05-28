@@ -82,6 +82,62 @@
             </div>
         </div>
     </div>
+<!-- 1. Firebase ki Libraries (Database connect karne ke liye) -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
+<!-- 2. IoT Circuit Breaker Control Buttons -->
+<div class="card" style="margin-top: 20px; border-top: 5px solid #d9534f;">
+    <h3 style="font-family: 'Segoe UI', sans-serif; color: #333;">IoT Circuit Breaker Control</h3>
+    <p style="font-family: 'Segoe UI', sans-serif; color: #666;">
+        Current Status: <strong id="statusText" style="color: green;">ON</strong>
+    </p>
+    <button id="tripBtn" style="background-color: #d9534f; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; margin-right: 10px;">TRIP (OFF)</button>
+    <button id="closeBtn" style="background-color: #5cb85c; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer;">CLOSE (ON)</button>
+</div>
+
+<!-- 3. Firebase connection aur Buttons ka logic -->
+<script>
+  // Aapka Firebase Configuration Code
+  const firebaseConfig = {
+    apiKey: "AIzaSyDtxtOH_mhQuvAKtkDC6yT3g",
+    authDomain: "iot-based-circuit-breake-8f095.firebaseapp.com",
+    databaseURL: "https://iot-based-circuit-breake-8f095-default-rtdb.firebaseio.com",
+    projectId: "iot-based-circuit-breake-8f095",
+    storageBucket: "iot-based-circuit-breake-8f095.appspot.com",
+    messagingSenderId: "923921660370",
+    appId: "1:923921660370:web:266837eff23c543aedf00b"
+  };
+
+  // Firebase ko chalu karein
+  firebase.initializeApp(firebaseConfig);
+  const database = firebase.database();
+
+  // Webpage ke elements ko select karna
+  const statusText = document.getElementById('statusText');
+  const tripBtn = document.getElementById('tripBtn');
+  const closeBtn = document.getElementById('closeBtn');
+
+  // Firebase se data read karna (Live Status change dikhane ke liye)
+  database.ref('breakerStatus').on('value', (snapshot) => {
+      const status = snapshot.val();
+      statusText.innerText = status;
+      if(status === "On" || status === "CLOSED_NORMAL") {
+          statusText.style.color = "green";
+      } else {
+          statusText.style.color = "red";
+      }
+  });
+
+  // TRIP Button dabaane par Firebase me data bhejra
+  tripBtn.addEventListener('click', () => {
+      database.ref('/').update({ breakerStatus: "TRIP" });
+  });
+
+  // CLOSE Button dabaane par Firebase me data bhejra
+  closeBtn.addEventListener('click', () => {
+      database.ref('/').update({ breakerStatus: "CLOSE" });
+  });
+</script>
 </body>
 </html>
